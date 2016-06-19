@@ -520,12 +520,16 @@ specifying the interpreter on unixoid systems.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-17">&#182;</a>
               </div>
-              <p>Every module given on the command line and/or in the cache file
-is processed.</p>
+              <p>Sort modules alphabetically. Modules will be embedded in
+alphabetical order. This ensures deterministic output.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  <span class="hljs-keyword">for</span> m,t <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>( modules ) <span class="hljs-keyword">do</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-keyword">local</span> module_names = {}
+  <span class="hljs-keyword">for</span> m <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>( modules ) <span class="hljs-keyword">do</span>
+    module_names[ #module_names+<span class="hljs-number">1</span> ] = m
+  <span class="hljs-keyword">end</span>
+  <span class="hljs-built_in">table</span>.sort( module_names )</pre></div></div>
             
         </li>
         
@@ -535,6 +539,23 @@ is processed.</p>
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-18">&#182;</a>
+              </div>
+              <p>Every module given on the command line and/or in the cache file
+is processed.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-keyword">for</span> _,m <span class="hljs-keyword">in</span> <span class="hljs-built_in">ipairs</span>( module_names ) <span class="hljs-keyword">do</span>
+    <span class="hljs-keyword">local</span> t = modules[ m ]</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-19">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-19">&#182;</a>
               </div>
               <p>Only Lua modules are handled for now, so modules that are
 definitely C modules are skipped and handled later.</p>
@@ -548,11 +569,11 @@ definitely C modules are skipped and handled later.</p>
         </li>
         
         
-        <li id="section-19">
+        <li id="section-20">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-19">&#182;</a>
+                <a class="pilcrow" href="#section-20">&#182;</a>
               </div>
               <p>The module is supposed to be a Lua module, but it cannot
 be found, so an error is raised.</p>
@@ -565,11 +586,11 @@ be found, so an error is raised.</p>
         </li>
         
         
-        <li id="section-20">
+        <li id="section-21">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-20">&#182;</a>
+                <a class="pilcrow" href="#section-21">&#182;</a>
               </div>
               <p>Module possibly is a C module, so it is tried again later.
 But the current error message is saved in case the given
@@ -585,11 +606,11 @@ name isn’t a C module either.</p>
         </li>
         
         
-        <li id="section-21">
+        <li id="section-22">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-21">&#182;</a>
+                <a class="pilcrow" href="#section-22">&#182;</a>
               </div>
               <p>Precompiled Lua modules are loaded via the standard Lua
 function <code>load</code> (or <code>loadstring</code> in Lua 5.1). Since this
@@ -608,11 +629,11 @@ approach is used for all files if the debug mode is active
         </li>
         
         
-        <li id="section-22">
+        <li id="section-23">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-22">&#182;</a>
+                <a class="pilcrow" href="#section-23">&#182;</a>
               </div>
               <p>Under normal circumstances Lua files are pasted into a
 new anonymous vararg function, which then is put into
@@ -642,11 +663,11 @@ unless the <code>-a</code> command line flag is specified.</p>
         </li>
         
         
-        <li id="section-23">
+        <li id="section-24">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-23">&#182;</a>
+                <a class="pilcrow" href="#section-24">&#182;</a>
               </div>
               <p>If the <code>-x</code> command line flag is active, C modules are embedded
 as strings, and written out to temporary files on demand by the
@@ -660,11 +681,11 @@ amalgamated code.</p>
         </li>
         
         
-        <li id="section-24">
+        <li id="section-25">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-24">&#182;</a>
+                <a class="pilcrow" href="#section-25">&#182;</a>
               </div>
               <p>To make the loading of C modules more robust, the necessary
 global functions are saved in upvalues (because user-supplied
@@ -708,17 +729,18 @@ end
 local dllnames = {}
 
 ]=]</span>
-    <span class="hljs-keyword">for</span> m,t <span class="hljs-keyword">in</span> <span class="hljs-built_in">pairs</span>( modules ) <span class="hljs-keyword">do</span>
+    <span class="hljs-keyword">for</span> _,m <span class="hljs-keyword">in</span> <span class="hljs-built_in">ipairs</span>( module_names ) <span class="hljs-keyword">do</span>
+      <span class="hljs-keyword">local</span> t = modules[ m ]
       <span class="hljs-keyword">if</span> t == <span class="hljs-string">"C"</span> <span class="hljs-keyword">then</span></pre></div></div>
             
         </li>
         
         
-        <li id="section-25">
+        <li id="section-26">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-25">&#182;</a>
+                <a class="pilcrow" href="#section-26">&#182;</a>
               </div>
               <p>Try a search strategy similar to the standard C module
 searcher first and then the all-in-one strategy to locate
@@ -739,11 +761,11 @@ the library files for the C modules to embed.</p>
         </li>
         
         
-        <li id="section-26">
+        <li id="section-27">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-26">&#182;</a>
+                <a class="pilcrow" href="#section-27">&#182;</a>
               </div>
               <p>Build the symbol(s) to look for in the dynamic library.
 There may be multiple candidates because of optional
@@ -758,11 +780,11 @@ approaches of the different Lua versions in handling that.</p>
         </li>
         
         
-        <li id="section-27">
+        <li id="section-28">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-27">&#182;</a>
+                <a class="pilcrow" href="#section-28">&#182;</a>
               </div>
               <p>The amalgamation of C modules is split into two parts:
 One part generates a temporary file name for the C library
@@ -811,11 +833,11 @@ end
         </li>
         
         
-        <li id="section-28">
+        <li id="section-29">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-28">&#182;</a>
+                <a class="pilcrow" href="#section-29">&#182;</a>
               </div>
               <p>Add a function to <code>package.preload</code> to load the temporary
 DLL or shared object file. This function tries to mimic the
@@ -847,11 +869,11 @@ beginning if that failed.</p>
         </li>
         
         
-        <li id="section-29">
+        <li id="section-30">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-29">&#182;</a>
+                <a class="pilcrow" href="#section-30">&#182;</a>
               </div>
               <p>If a main script is specified on the command line (<code>-s</code> flag),
 embed it now that all dependent modules are available to
@@ -879,11 +901,11 @@ embed it now that all dependent modules are available to
         </li>
         
         
-        <li id="section-30">
+        <li id="section-31">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-30">&#182;</a>
+                <a class="pilcrow" href="#section-31">&#182;</a>
               </div>
               <p>If <code>amalg.lua</code> is loaded as a module, it intercepts <code>require</code> calls
 (more specifically calls to the searcher functions) to collect all
@@ -898,11 +920,11 @@ embed it now that all dependent modules are available to
         </li>
         
         
-        <li id="section-31">
+        <li id="section-32">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-31">&#182;</a>
+                <a class="pilcrow" href="#section-32">&#182;</a>
               </div>
               <p>When the searchers table has been modified, it is unknown which
 elements in the table to replace, so <code>amalg.lua</code> bails out with
@@ -920,11 +942,11 @@ supported, though!</p>
         </li>
         
         
-        <li id="section-32">
+        <li id="section-33">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-32">&#182;</a>
+                <a class="pilcrow" href="#section-33">&#182;</a>
               </div>
               <p>The updated cache is written to disk when the following value is
 garbage collected, which should happen at <code>lua_close()</code>.</p>
@@ -948,11 +970,11 @@ garbage collected, which should happen at <code>lua_close()</code>.</p>
         </li>
         
         
-        <li id="section-33">
+        <li id="section-34">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-33">&#182;</a>
+                <a class="pilcrow" href="#section-34">&#182;</a>
               </div>
               <p>The replacement searchers just forward to the original versions,
 but also update the cache if the search was successful.</p>
@@ -975,11 +997,11 @@ but also update the cache if the search was successful.</p>
         </li>
         
         
-        <li id="section-34">
+        <li id="section-35">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-34">&#182;</a>
+                <a class="pilcrow" href="#section-35">&#182;</a>
               </div>
               <p>Since calling <code>os.exit</code> might skip the <code>lua_close()</code> call, the
 <code>os.exit</code> function is monkey-patched to also save the updated
@@ -999,11 +1021,11 @@ cache to the cache file on disk.</p>
         </li>
         
         
-        <li id="section-35">
+        <li id="section-36">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-35">&#182;</a>
+                <a class="pilcrow" href="#section-36">&#182;</a>
               </div>
               <p>To determine whether <code>amalg.lua</code> is run as a script or loaded as a
 module it uses the debug module to walk the call stack looking for
@@ -1028,11 +1050,11 @@ a <code>require</code> call. If such a call is found, <code>amalg.lua</code> has
         </li>
         
         
-        <li id="section-36">
+        <li id="section-37">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-36">&#182;</a>
+                <a class="pilcrow" href="#section-37">&#182;</a>
               </div>
               <p>This checks whether <code>amalg.lua</code> has been called as a script or
 loaded as a module and acts accordingly, by calling the
