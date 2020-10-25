@@ -110,7 +110,7 @@ plugins to amalg. To select a transformation us the <code>-z</code> option.
 Multiple compression/transformation steps are possible, and they
 are executed in the given order. The necessary decompression code
 is embedded in the result and executed automatically.</p>
-<pre><code>./amalg.lua -o out.lua -s main.lua -c -z luac -z gzip</code></pre><p>That’s it. For further info consult the source.</p>
+<pre><code>./amalg.lua -o out.lua -s main.lua -c -z luac -z zlib</code></pre><p>That’s it. For further info consult the source.</p>
 <h2 id="implementation">Implementation</h2>
 
             </div>
@@ -241,10 +241,9 @@ console.</p>
 
   <span class="hljs-keyword">local</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">add_plugin</span><span class="hljs-params">( v )</span></span>
     <span class="hljs-keyword">if</span> v <span class="hljs-keyword">then</span>
-      <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> <span class="hljs-built_in">pcall</span>( <span class="hljs-built_in">require</span>, <span class="hljs-string">"amalg."</span>..v..<span class="hljs-string">".inflate"</span> ) <span class="hljs-keyword">or</span>
-         <span class="hljs-keyword">not</span> <span class="hljs-built_in">pcall</span>( <span class="hljs-built_in">require</span>, <span class="hljs-string">"amalg."</span>..v..<span class="hljs-string">".deflate"</span> ) <span class="hljs-keyword">then</span>
-        warn( <span class="hljs-string">"Broken compression plugin: '"</span>..v..<span class="hljs-string">"'"</span> )
-      <span class="hljs-keyword">elseif</span> <span class="hljs-keyword">not</span> plugin_set[ v ] <span class="hljs-keyword">then</span>
+      <span class="hljs-built_in">require</span>( <span class="hljs-string">"amalg."</span>..v..<span class="hljs-string">".deflate"</span> )
+      <span class="hljs-built_in">require</span>( <span class="hljs-string">"amalg."</span>..v..<span class="hljs-string">".inflate"</span> )
+      <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> plugin_set[ v ] <span class="hljs-keyword">then</span>
         plugins[ #plugins+<span class="hljs-number">1</span> ] = v
         plugin_set[ v ] = <span class="hljs-literal">true</span>
       <span class="hljs-keyword">end</span>
@@ -535,7 +534,7 @@ parentheses are not included in the resulting string.</p>
             <div class="content"><div class='highlight'><pre><span class="hljs-keyword">local</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">add_inflate_calls</span><span class="hljs-params">( plugins )</span></span>
   <span class="hljs-keyword">local</span> s = <span class="hljs-string">""</span>
   <span class="hljs-keyword">for</span> _, p <span class="hljs-keyword">in</span> <span class="hljs-built_in">ipairs</span>( plugins ) <span class="hljs-keyword">do</span>
-    s = s..<span class="hljs-string">" require( \"amalg.\".."</span>..qformat( p )..<span class="hljs-string">"..\".inflate\" )("</span>
+    s = s..<span class="hljs-string">" require( "</span>..qformat( <span class="hljs-string">"amalg."</span>..p..<span class="hljs-string">".inflate"</span> )..<span class="hljs-string">" )("</span>
   <span class="hljs-keyword">end</span>
   <span class="hljs-keyword">return</span> s
 <span class="hljs-keyword">end</span></pre></div></div>
